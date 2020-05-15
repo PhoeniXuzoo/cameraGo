@@ -3,15 +3,27 @@ import { StyleSheet, Text, View, TouchableOpacity, Platform } from 'react-native
 import { Camera } from 'expo-camera';
 import * as Permissions from 'expo-permissions';
 import { FontAwesome, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
 
 
 export default class App extends React.Component {
   state = {
     hasPermission: null,
-    tcameraType: Camera.Constants.Type.back,
+    cameraType: Camera.Constants.Type.back,
   }
 
   async componentDidMount() {
+    this.getPermissionAsync()
+  }
+
+  getPermissionAsync = async () => {
+    if (Platform.OS === 'ios') {
+      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+      if (status !== 'granted') {
+        alert('Sorry, we need camera roll permissions to make this work!');
+      }
+    }
+
     const { status } = await Permissions.askAsync(Permissions.CAMERA);
     this.setState({ hasPermission: status === 'granted' });
   }
@@ -29,7 +41,7 @@ export default class App extends React.Component {
   takePicture = async () => {
     if (this.camera) {
       let photo = await this.camera.takePictureAsync();
-
+      // console.log(photo)
     }
   }
 
